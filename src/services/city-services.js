@@ -41,6 +41,17 @@ class CityServices {
       throw { error };
     }
   }
+
+
+  async getAllCity(filter) {
+    try {
+      const city = await this.cityRepository.getAllCity({name:filter.name});
+      return city;
+    } catch (error) {
+      throw { error };
+    }
+  }
 }
+
 
 module.exports = CityServices;

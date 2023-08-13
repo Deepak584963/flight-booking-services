@@ -1,11 +1,12 @@
+const { where } = require("sequelize");
 const { city } = require("../models/index");
-
+const { Op } = require("sequelize");
 class CityRepository {
-  async createCity({name}) {
+  async createCity({ name }) {
     try {
       // console.log(name);
       const City = await city.create({
-        name
+        name,
       });
       return City;
     } catch (error) {
@@ -31,12 +32,10 @@ class CityRepository {
 
   async updateCity(cityId, data) {
     try {
-      const city = await City.update(data, {
-        where: {
-          id: cityId,
-        },
-      });
-      return city;
+      const City = await city.findByPk(cityId);
+      City.name = data.name;
+      await City.save();
+      return City;
     } catch (error) {
       console.log("something went wrong in the Repository layer");
       throw { error };
@@ -45,8 +44,29 @@ class CityRepository {
 
   async getCity(cityId) {
     try {
-      console.log(cityId)
+      console.log(cityId);
       const City = await city.findByPk(cityId);
+      return City;
+    } catch (error) {
+      console.log("something went wrong in the Repository layer");
+      throw { error };
+    }
+  }
+
+  async getAllCity(filter) {
+    try {
+      if (filter.name) {
+        const City = await city.findAll({
+          where: {
+            name: {
+              [Op.startsWith]: filter.name,
+            },
+          },
+        });
+
+        return City;
+      }
+      const City = await city.findAll();
       return City;
     } catch (error) {
       console.log("something went wrong in the Repository layer");
